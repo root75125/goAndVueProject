@@ -1,21 +1,22 @@
 <template>
   <div>
-    <input type="text" v-model="name" placeholder="pls w n" />
+    <input type="text" v-model="nameV" placeholder="pls w name" />
     <button @click="sendRequest">send</button>
   </div>
-  <label>{{ message }}</label>
+  <div>
+    <label>{{ message }}</label>
+  </div>
 </template>
 
 <script>
 import { ref } from "vue";
 export default {
   setup() {
-    const name = ref("");
+    const nameV = ref("");
     const message = ref("unconnect");
     const sendRequest = async () => {
-      if (name.value == "") {
+      if (!nameV.value.trim()) {
         message.value = "pls w name";
-        return;
       }
       try {
         const response = await fetch("http://localhost:8080/api/greet", {
@@ -24,18 +25,18 @@ export default {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: name.value,
+            name: nameV.value,
           }),
         });
         const data = await response.json();
         message.value = data.message;
-      } catch (error) {
-        console.error("error:", error);
-        message.value = "happen error";
+      } catch (erorr) {
+        console.error("error:", erorr);
+        message.value = "error happen";
       }
     };
     return {
-      name,
+      nameV,
       message,
       sendRequest,
     };
