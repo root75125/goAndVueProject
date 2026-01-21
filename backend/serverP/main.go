@@ -26,11 +26,12 @@ func main() {
 	http.HandleFunc("/api/greet", greetHandler)
 	fmt.Println("run server")
 	if err := server.ListenAndServe(); err != nil {
-		fmt.Println("error server:", err)
+		fmt.Println("error server")
 	}
 }
 
 func greetHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("reach")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS,POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -45,21 +46,22 @@ func greetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	req, err := io.ReadAll(r.Body)
+	reqData, err := io.ReadAll(r.Body)
 	if err != nil {
 		fmt.Println("error1:", err)
 		return
 	}
-	var reqData Request
-	if err := json.Unmarshal(req, &reqData); err != nil {
-		fmt.Println("erorr2", err)
+	var req Request
+	if err = json.Unmarshal(reqData, &req); err != nil {
+		fmt.Println("error2:", err)
 		return
 	}
+
 	res := Response{
-		Message: "test" + reqData.Name,
+		Message: time.Now().Format(time.RFC3339) + ":" + req.Name,
 	}
 	if err = json.NewEncoder(w).Encode(&res); err != nil {
-		fmt.Println("error3", err)
+		fmt.Println("error3:", err)
 		return
 	}
 }
